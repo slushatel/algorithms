@@ -1,8 +1,9 @@
+package permutations;
+
 import edu.princeton.cs.algs4.StdRandom;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Queue;
 
 public class RandomizedQueue<Item> implements Iterable<Item> {
 
@@ -47,7 +48,7 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 	private void ensureCapacity() {
 		if (last == items.length - 1) {
 			int size = size();
-			if (size() <= items.length / 2) {
+			if (size <= items.length / 2) {
 				// move elements to the start of the array
 				for (int i = 0; i < size(); i++) {
 					items[i] = items[i + first];
@@ -56,26 +57,44 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 			} else {
 				// create new array
 				Item[] itemsOld = items;
-				createNewItems(2*items.length);
+				createNewItems(2 * size);
 				for (int i = 0; i < size(); i++) {
 					items[i] = itemsOld[i + first];
 				}
 			}
-			first = 0;
-			last = size - 1;
+			initPointers(size());
 		}
 	}
 
 	private void shrinkCapacity() {
+		int size = size();
+		if (size <= items.length / 4) {
+			Item[] itemsOld = items;
+			createNewItems(2 * size);
+			for (int i = 0; i < size(); i++) {
+				items[i] = itemsOld[i + first];
+			}
+			initPointers(size());
+		}
+	}
 
+	private void initPointers(int size) {
+		first = 0;
+		last = size - 1;
 	}
 
 	// remove and return a random item
 	public Item dequeue() {
 		checkIsEmpty();
 
-		Item item = items[first];
-		items[first] = null;
+		int size = size();
+		int random = StdRandom.uniform(size);
+
+		Item item = items[first + random];
+		if (random > 0) {
+			items[first + random] = items[first];
+			items[first] = null;
+		}
 		first++;
 
 		if (first > last) {
@@ -105,15 +124,35 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 	}
 
 	private class RandomizeQueueIterator implements Iterator<Item> {
+		private final int[] unusedIndexes;
+		private int unusedCount;
+
+		public RandomizeQueueIterator() {
+			int size = size();
+			unusedIndexes = new int[size];
+			unusedCount = size;
+		}
 
 		@Override
 		public boolean hasNext() {
-			return !isEmpty();
+			return unusedCount > 0;
 		}
 
 		@Override
 		public Item next() {
-			return sample();
+			if (unusedCount == 0) throw new NoSuchElementException();
+
+			int random = StdRandom.uniform(unusedCount);
+			unusedCount--;
+			Item res;
+			if (unusedIndexes[random] == 0) {
+				res = items[random + first];
+			} else {
+				res = items[unusedIndexes[random] + first];
+			}
+			if (random < unusedCount)
+				unusedIndexes[random] = unusedIndexes[unusedCount] == 0 ? unusedCount : unusedIndexes[unusedCount];
+			return res;
 		}
 
 		@Override
@@ -147,11 +186,8 @@ public class RandomizedQueue<Item> implements Iterable<Item> {
 			System.out.println(queue.sample());
 		}
 		System.out.println("iterate over queue");
-		int i = 0;
 		for (int item : queue) {
-			if (++i == 20) break;
 			System.out.println(item);
 		}
 	}
-
 }
