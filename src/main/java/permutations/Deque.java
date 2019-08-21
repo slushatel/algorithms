@@ -113,6 +113,8 @@ public class Deque<Item> implements Iterable<Item> {
 
 	// unit testing (required)
 	public static void main(String[] args) {
+		System.out.println(Integer.MIN_VALUE);
+		System.out.println(Math.abs(Integer.MIN_VALUE));
 		Deque<String> deque = new Deque<>();
 		System.out.println(deque.size);
 		deque.addFirst("first");
