@@ -1,3 +1,5 @@
+package wordnet;
+
 public class Outcast {
 	private final WordNet wordNet;
 
