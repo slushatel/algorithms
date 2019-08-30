@@ -1,3 +1,4 @@
+import edu.princeton.cs.algs4.FlowNetwork;
 import edu.princeton.cs.algs4.In;
 import edu.princeton.cs.algs4.StdOut;
 
@@ -7,7 +8,7 @@ import java.util.Map;
 
 public class BaseballElimination {
 	final Map<String, Integer> teams;
-	final int[] w,l,r;
+	final int[] w, l, r;
 	final int[][] g;
 	final int n;
 
@@ -75,16 +76,18 @@ public class BaseballElimination {
 	public boolean isEliminated(String team) {
 		checkTeams(team);
 
+		FlowNetwork fn = new FlowNetwork()
+		return true;
 	}
 
 	// subset R of teams that eliminates given team; null if not eliminated
 	public Iterable<String> certificateOfElimination(String team) {
 		checkTeams(team);
-
+		return new ArrayList<>();
 	}
 
 	public static void main(String[] args) {
-		BaseballElimination division = new BaseballElimination(args[0]);
+		BaseballElimination division = new BaseballElimination("C:\\work\\algorithms\\src\\main\\java\\teams4.txt");
 		for (String team : division.teams()) {
 			if (division.isEliminated(team)) {
 				StdOut.print(team + " is eliminated by the subset R = { ");
@@ -92,8 +95,7 @@ public class BaseballElimination {
 					StdOut.print(t + " ");
 				}
 				StdOut.println("}");
-			}
-			else {
+			} else {
 				StdOut.println(team + " is not eliminated");
 			}
 		}
